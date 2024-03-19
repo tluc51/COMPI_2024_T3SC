@@ -1,0 +1,7 @@
+name: BrownianNoise
+params:
+  alpha: 2
+  sigma: 25
+  seed: ${seed}
+noise_level: ${noise.params.sigma}
+id: ${noise.name}-a${noise.params.alpha}-s${noise.params.sigma}

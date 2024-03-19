@@ -1,0 +1,7 @@
+name: BlueNoise
+params:
+  alpha: -1
+  sigma: 25
+  seed: ${seed}
+noise_level: ${noise.params.sigma}
+id: ${noise.name}-a${noise.params.alpha}-s${noise.params.sigma}

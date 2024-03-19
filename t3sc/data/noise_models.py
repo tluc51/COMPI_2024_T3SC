@@ -170,3 +170,61 @@ class StripesNoise:
             f"{self.ratio_columns[1]}_"
             f"s{self.sigma}"
         )
+
+
+class ColorNoise:
+    def __init__(
+        self,
+        alpha,   # S(f) ~ 1/f^alpha
+        sigma=25,
+        **kwargs,
+    ):
+        self.alpha = alpha
+        self.sigma = sigma
+        self.std = self.sigma/255
+        
+    def generate_noise(self, shape):
+        c, h, w = shape
+        assert len(shape) == 3, "Shape must be a 3-tuple corresponding to (channels, height, width)."
+        
+        # Create a grid of frequencies
+        freqs = torch.fft.fftfreq(max(h, w), d=1.0).to(torch.float32)
+        freqs = torch.sqrt(freqs[None, :]**2 + freqs[:, None]**2)
+        
+        # Apply the 1/f^alpha filter in the frequency domain
+        with torch.no_grad():
+            filter = 1.0 / (freqs**self.alpha + 1e-8)  # Avoid division by zero
+            filter /= filter.max()  # Normalize
+        
+        # Generate white noise and apply the filter
+        white_noise = torch.randn((c, h, w), dtype=torch.float32) * self.std
+        color_noise = torch.fft.ifft2(torch.fft.fft2(white_noise) * filter).real
+        
+        return color_noise.float()
+    
+    def apply(self, x, seed=None, **kwargs):
+        if seed is not None:
+            torch.manual_seed(seed)
+        
+        p_noise = self.generate_noise(x.shape)
+        noisy = x + p_noise
+        
+        return x, noisy
+
+    def __repr__(self):
+        return f"ColorNoise_alpha{self.alpha}_sigma{self.sigma}"
+    
+    
+class PinkNoise(ColorNoise):
+    def __init__(self, alpha=1, sigma=25, **kwargs):
+        super().__init__(alpha, sigma, **kwargs)
+
+
+class BrownianNoise(ColorNoise):
+    def __init__(self, alpha=2, sigma=25, **kwargs):
+        super().__init__(alpha, sigma, **kwargs)
+        
+        
+class BlueNoise(ColorNoise):
+    def __init__(self, alpha=-1, sigma=25, **kwargs):
+        super().__init__(alpha, sigma, **kwargs)
