@@ -1,0 +1,8 @@
+name: Occlusion
+params:
+  nb_bands_affected: 10
+  occlusion_size: [300, 300]
+  sigma: 50
+  seed: ${seed}
+noise_level: ${noise.params.sigma}
+id: ${noise.name}-nb${noise.params.nb_bands_affected}-si${noise.params.occlusion_size}-s${noise.params.sigma}

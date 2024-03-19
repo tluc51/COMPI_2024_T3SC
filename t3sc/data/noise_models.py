@@ -3,6 +3,8 @@ import logging
 import numpy as np
 import torch
 
+from t3sc.data.splits import icvl_rgb
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -228,3 +230,57 @@ class BrownianNoise(ColorNoise):
 class BlueNoise(ColorNoise):
     def __init__(self, alpha=-1, sigma=25, **kwargs):
         super().__init__(alpha, sigma, **kwargs)
+
+# Occlusion with Gaussian noise
+class Occlusion:
+    def __init__(self, nb_bands_affected, occlusion_size, sigma, bands, **kwargs):
+        self.bands = bands
+        self.nb_bands_affected = nb_bands_affected
+        self.occlusion_size = occlusion_size
+
+        self.sigma = sigma
+
+        self.sigmas = self.sigma * torch.ones((self.bands, 1, 1)) / 255
+        self.sigma_avg = self.sigma / 255
+
+    def apply(self, x, seed, **kwargs):
+        generator = np.random.RandomState(seed=seed)
+
+        c, h, w = x.shape
+
+        band_idx = np.array(range(c))
+
+        # For ICVL only to visualize
+        # RGB: [8, 14, 27] always occluded bands
+
+        band_idx = np.delete(band_idx, icvl_rgb)
+
+        bands_affected = generator.choice(band_idx, self.nb_bands_affected-3, replace=False)
+        bands_affected = np.append(bands_affected, icvl_rgb)
+
+        max_y_pos = w - self.occlusion_size[1]
+        max_x_pos = h - self.occlusion_size[0]
+
+        x_pos = generator.choice(range(max_x_pos))
+        y_pos = generator.choice(range(max_y_pos))
+
+        mask = torch.ones(*x.shape)
+        mask[bands_affected, x_pos:x_pos+self.occlusion_size[0], y_pos:y_pos+self.occlusion_size[1]] = 0
+
+        occluded = mask*x
+
+        # Add noise to occluded image
+        noise_pixels = torch.tensor(
+            generator.randn(*x.shape),
+            dtype=torch.float32,
+            device=x.device,
+        )
+
+        occluded = occluded + self.sigmas * noise_pixels
+
+        return x, occluded
+
+    def __repr__(self) -> str:
+        name = type(self).__name__
+        msg = f"{name}_nb-band-affected{self.nb_bands_affected}_occlusion-size{self.occlusion_size}_s{self.sigma}"
+        return msg
