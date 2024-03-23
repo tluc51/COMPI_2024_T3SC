@@ -184,7 +184,7 @@ class ColorNoise:
         self.alpha = alpha
         self.sigma = sigma
         self.std = self.sigma/255
-        
+
     def generate_noise(self, shape):
         # Generate white noise
         white_noise = torch.randn(shape)
