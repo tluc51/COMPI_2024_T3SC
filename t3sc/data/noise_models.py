@@ -186,23 +186,26 @@ class ColorNoise:
         self.std = self.sigma/255
         
     def generate_noise(self, shape):
-        c, h, w = shape
-        assert len(shape) == 3, "Shape must be a 3-tuple corresponding to (channels, height, width)."
-        
-        # Create a grid of frequencies
-        freqs = torch.fft.fftfreq(max(h, w), d=1.0).to(torch.float32)
-        freqs = torch.sqrt(freqs[None, :]**2 + freqs[:, None]**2)
-        
-        # Apply the 1/f^alpha filter in the frequency domain
-        with torch.no_grad():
-            filter = 1.0 / (freqs**self.alpha + 1e-8)  # Avoid division by zero
-            filter /= filter.max()  # Normalize
-        
-        # Generate white noise and apply the filter
-        white_noise = torch.randn((c, h, w), dtype=torch.float32) * self.std
-        color_noise = torch.fft.ifft2(torch.fft.fft2(white_noise) * filter).real
-        
-        return color_noise.float()
+        # Generate white noise
+        white_noise = torch.randn(shape)
+
+        # Compute the FFT of the white noise
+        noise_fft = torch.fft.fftn(white_noise)
+
+        # Generate frequency indices
+        freq_x = torch.fft.fftfreq(shape[-2])
+        freq_y = torch.fft.fftfreq(shape[-1])
+        freq_x, freq_y = torch.meshgrid(freq_x, freq_y, indexing='ij')
+        f = torch.sqrt(freq_x**2 + freq_y**2)
+        f[0, 0] = 1.0  # To avoid division by zero
+
+        # Scale the FFT by 1/ (f**alpha)
+        color_noise_fft = noise_fft / (f**self.alpha)
+
+        # Convert back to spatial domain
+        color_noise = torch.fft.ifftn(color_noise_fft).real
+
+        return color_noise.float()/color_noise.max()
     
     def apply(self, x, seed=None, **kwargs):
         if seed is not None:
