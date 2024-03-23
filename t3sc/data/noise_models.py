@@ -192,10 +192,10 @@ class ColorNoise:
         # Compute the FFT of the white noise
         noise_fft = torch.fft.fftn(white_noise)
 
-        # Generate frequency indices
-        freq_x = torch.fft.fftfreq(shape[-2])
+         # Generate frequency indices
+        freq_x = torch.fft.fftfreq(shape[-2]).reshape(-1, 1)
         freq_y = torch.fft.fftfreq(shape[-1])
-        freq_x, freq_y = torch.meshgrid(freq_x, freq_y, indexing='ij')
+        # freq_x, freq_y = torch.meshgrid(freq_x, freq_y, indexing='ij')
         f = torch.sqrt(freq_x**2 + freq_y**2)
         f[0, 0] = 1.0  # To avoid division by zero
 
