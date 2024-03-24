@@ -1,5 +1,6 @@
 name: BrownianNoise
 params:
+  ratio_bands: 0.33
   alpha: 2
   sigma: 25
   seed: ${seed}

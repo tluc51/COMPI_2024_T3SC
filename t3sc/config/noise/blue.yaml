@@ -1,5 +1,6 @@
 name: BlueNoise
 params:
+  ratio_bands: 0.33
   alpha: -1
   sigma: 25
   seed: ${seed}

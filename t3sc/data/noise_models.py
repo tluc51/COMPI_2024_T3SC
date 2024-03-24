@@ -177,17 +177,21 @@ class StripesNoise:
 class ColorNoise:
     def __init__(
         self,
-        alpha,   # S(f) ~ 1/f^alpha
+        bands,
+        alpha,  # S(f) ~ 1/f^alpha
+        ratio_bands = 0.33,
         sigma=25,
         **kwargs,
     ):
         self.alpha = alpha
         self.sigma = sigma
         self.std = self.sigma/255
+        self.bands = bands
+        self.ratio_bands = ratio_bands
 
     def generate_noise(self, shape):
         # Generate white noise
-        white_noise = torch.randn(shape)
+        white_noise = torch.randn(shape[-2], shape[-1])
 
         # Compute the FFT of the white noise
         noise_fft = torch.fft.fftn(white_noise)
@@ -210,29 +214,36 @@ class ColorNoise:
     def apply(self, x, seed=None, **kwargs):
         if seed is not None:
             torch.manual_seed(seed)
+            
+        n_bands = round(self.ratio_bands * self.bands)
+        print(n_bands)
+        bands_affected = np.random.choice(range(self.bands), size=n_bands, replace=False)
+        print(bands_affected)
+        noisy = x.clone()
         
-        p_noise = self.generate_noise(x.shape)
-        noisy = x + p_noise
+        for band in bands_affected:
+            p_noise = self.generate_noise(x.shape) * (band+1) * self.std
+            noisy[band] = x[band] + p_noise
         
         return x, noisy
 
     def __repr__(self):
         return f"ColorNoise_alpha{self.alpha}_sigma{self.sigma}"
-    
+     
     
 class PinkNoise(ColorNoise):
-    def __init__(self, alpha=1, sigma=25, **kwargs):
-        super().__init__(alpha, sigma, **kwargs)
+    def __init__(self, bands, alpha=1, ratio_bands=0.33, sigma=25, **kwargs):
+        super().__init__(bands, alpha, ratio_bands, sigma, **kwargs)
 
 
 class BrownianNoise(ColorNoise):
-    def __init__(self, alpha=2, sigma=25, **kwargs):
-        super().__init__(alpha, sigma, **kwargs)
+    def __init__(self, bands, alpha=2, ratio_bands=0.33, sigma=25, **kwargs):
+        super().__init__(bands, alpha, ratio_bands, sigma, **kwargs)
         
         
 class BlueNoise(ColorNoise):
-    def __init__(self, alpha=-1, sigma=25, **kwargs):
-        super().__init__(alpha, sigma, **kwargs)
+    def __init__(self, bands, alpha=-1, ratio_bands=0.33, sigma=25, **kwargs):
+        super().__init__(bands, alpha, ratio_bands, sigma, **kwargs)
 
 # Occlusion with Gaussian noise
 class Occlusion:
