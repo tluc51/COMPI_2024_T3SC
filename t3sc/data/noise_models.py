@@ -214,16 +214,24 @@ class ColorNoise:
     def apply(self, x, seed=None, **kwargs):
         if seed is not None:
             torch.manual_seed(seed)
-            
+        
+        band_idx = np.array(range(self.bands))
+        band_idx_affected = np.delete(band_idx, icvl_rgb)
+        
         n_bands = round(self.ratio_bands * self.bands)
-        print(n_bands)
-        bands_affected = np.random.choice(range(self.bands), size=n_bands, replace=False)
-        print(bands_affected)
+        bands_affected = np.random.choice(band_idx_affected, size=n_bands-3, replace=False)
+        bands_affected = np.append(bands_affected, icvl_rgb)
+        bands_rest = np.delete(band_idx, bands_affected)
+        
         noisy = x.clone()
         
         for band in bands_affected:
             p_noise = self.generate_noise(x.shape) * (band+1) * self.std
             noisy[band] = x[band] + p_noise
+            
+        for band in bands_rest:
+            p_noise = torch.randn(x.shape[-2], x.shape[-1]) * (band+1) * self.std
+            noisy[band] += p_noise
         
         return x, noisy
 
