@@ -2,7 +2,8 @@ name: BrownianNoise
 params:
   ratio_bands: 0.33
   alpha: 2
+  noise_scale: 1.0
   sigma: 25
   seed: ${seed}
 noise_level: ${noise.params.sigma}
-id: ${noise.name}-a${noise.params.alpha}-s${noise.params.sigma}
+id: ${noise.name}-a${noise.params.alpha}-s${noise.params.sigma}-i${noise.params.noise_scale}

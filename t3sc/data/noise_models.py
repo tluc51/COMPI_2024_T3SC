@@ -179,6 +179,7 @@ class ColorNoise:
         self,
         bands,
         alpha,  # S(f) ~ 1/f^alpha
+        noise_scale = 1.0,
         ratio_bands = 0.33,
         sigma=25,
         **kwargs,
@@ -188,6 +189,7 @@ class ColorNoise:
         self.std = self.sigma/255
         self.bands = bands
         self.ratio_bands = ratio_bands
+        self.noise_scale = noise_scale
 
     def generate_noise(self, shape):
         # Generate white noise
@@ -226,11 +228,11 @@ class ColorNoise:
         noisy = x.clone()
         
         for band in bands_affected:
-            p_noise = self.generate_noise(x.shape) * (band+1) * self.std
+            p_noise = self.generate_noise(x.shape) * self.std * self.noise_scale
             noisy[band] = x[band] + p_noise
             
         for band in bands_rest:
-            p_noise = torch.randn(x.shape[-2], x.shape[-1]) * (band+1) * self.std
+            p_noise = torch.randn(x.shape[-2], x.shape[-1]) * self.std * self.noise_scale
             noisy[band] += p_noise
         
         return x, noisy
@@ -240,18 +242,18 @@ class ColorNoise:
      
     
 class PinkNoise(ColorNoise):
-    def __init__(self, bands, alpha=1, ratio_bands=0.33, sigma=25, **kwargs):
-        super().__init__(bands, alpha, ratio_bands, sigma, **kwargs)
+    def __init__(self, bands, alpha=1, noise_scale=1.0, ratio_bands=0.33, sigma=25, **kwargs):
+        super().__init__(bands, alpha, noise_scale, ratio_bands, sigma, **kwargs)
 
 
 class BrownianNoise(ColorNoise):
-    def __init__(self, bands, alpha=2, ratio_bands=0.33, sigma=25, **kwargs):
-        super().__init__(bands, alpha, ratio_bands, sigma, **kwargs)
+    def __init__(self, bands, alpha=2, noise_scale=1.0, ratio_bands=0.33, sigma=25, **kwargs):
+        super().__init__(bands, alpha, noise_scale, ratio_bands, sigma, **kwargs)
         
         
 class BlueNoise(ColorNoise):
-    def __init__(self, bands, alpha=-1, ratio_bands=0.33, sigma=25, **kwargs):
-        super().__init__(bands, alpha, ratio_bands, sigma, **kwargs)
+    def __init__(self, bands, alpha=-1, noise_scale=1.0, ratio_bands=0.33, sigma=25, **kwargs):
+        super().__init__(bands, alpha, noise_scale, ratio_bands, sigma, **kwargs)
 
 # Occlusion with Gaussian noise
 class Occlusion:
