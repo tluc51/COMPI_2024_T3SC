@@ -45,9 +45,28 @@ An area in the 2D image is zeroed. Similar to the previous part, we choose some 
 
 ## 3. Experiments and Results
 ### 3.1. Experiments
+Firstly, we run several tests for three new noises and occlusion using the pretrained models provided by authors. Then, we train our own models and run inference once again to evaluate the improvement.
 
+**For noise**:
+- The three noises with pretrained models.
+- Pink noise with its own trained model (same configured parameters).
+- Pink noise with its own trained models (different configured parameters).
+- Other noise with trained model for pink noise (same configured parameters).
+
+**NOTE:** Pink, Brownian and blue noise are characterized by variance $\sigma$, number of affected bands and noise scale.
+
+**NOTE 2:** Currently, we only show the result for pink noise.
+
+**For occlusion**:
+- Tests with pretrained models.
+- Test with its own trained model (same configured parameters).
+- Test with its own trained model (different configured parameters).
+
+**NOTE:** Occlusion is characterized by number of affected bands and size of masked area.
 
 ### 3.2. Results
+
+### 3.3. Conclusion
 
 ## 4. How to run
 ### 4.1. Requirements
@@ -57,15 +76,26 @@ pip install -r requirements.txt
 ```
 
 ### 4.2. Training and Testing
-Please visit the original repository for more details. Currently, there are three available colors of noise: Pink, Brownian and Blue. Feel free to play with the parameters.
+Please visit the original repository for more details. Currently, there are three available colors of noise: Pink, Brownian and Blue.
 
 ### Some examples
 **Train**
 
+ICVL dataset with pink noise
+```
+$ python main.py data=icvl noise=pink
+```
+
+Washington DC Mall dataset with occlusion
+```
+$ python main.py data=dcmall noise=occlusion
+```
 
 **Test**
+
 ```
 $ python main.py mode=test data=icvl noise=pink noise params.sigma=25 model.ckpt=path/to/icvl_pink_25.ckpt
 ```
 
-The pretrained models can be found here.
+Some pretrained models can be found here.
+ Feel free to modify the noise parameters to see the differences. You can access this folder for more information.
