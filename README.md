@@ -98,9 +98,9 @@ We train 2 models with around 33% and 50% number of bands being affected, respec
 
 *Results of 10 bands*
 
-Original |Gaussian pretrained $\sigma=25$ | Stripes pretrained
+Original |Gaussian pretrained sigma=25 | Stripes pretrained
 :---:|:---:|:---:
-<img src="/figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/input.png" height="200"/>|<img src="/figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/our_weights_33_percent_10_bands.png" height="200"/>|<img src="/figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/our_weights_50_percent_10_bands.png" height="200"/>
+<img src="/figs/original.png" height="200"/>|<img src="/figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/out_25_gaussian_pretrained.png" height="200"/>|<img src="/figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/out_stripe_pretrained.png" height="200"/>
 
 Input |Our weights 0.33 | Our weights 0.5
 :---:|:---:|:---:
