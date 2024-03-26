@@ -65,8 +65,80 @@ Firstly, we run several tests for three new noises and occlusion using the pretr
 **NOTE:** Occlusion is characterized by number of affected bands and size of masked area.
 
 ### 3.2. Results
+**Noise**  
+Firstly, we test the pink-noisy image (as described previously) at different noise power scale with Gaussian pretrained model. Later, we train a model of noisy pink with noise level = 2.5 then evaluate the performance at other values. In all tests, we use $\sigma = 25$ and 33% of bands are affected as default.
+
+*Noise level = 1.5*
+Original |Noisy|Gaussian pretrained | Our weights
+:---:|:---:|:---:|:---:
+<img src="figs/original.png" height="200"/>|<img src="figs\pink_and_white_0.33\constant_25\scale_1-5\in.png" height="200"/>|<img src="figs\pink_and_white_0.33\constant_25\scale_1-5\out.png" height="200"/>| <img src="figs\pink_and_white_0.33\pink_2-5_scale_10_bands\scale_1-5\out.png" height="200"/>
+
+*Noise level = 2.5*
+Original |Noisy|Gaussian pretrained | Our weights
+:---:|:---:|:---:|:---:
+<img src="figs/original.png" height="200"/>|<img src="figs\pink_and_white_0.33\constant_25\scale_2-5\in.png" height="200"/>|<img src="figs\pink_and_white_0.33\constant_25\scale_2-5\out.png" height="200"/>| <img src="figs\pink_and_white_0.33\pink_2-5_scale_10_bands\scale_2-5\out.png" height="200"/>
+
+*Noise level = 5*
+Original |Noisy|Gaussian pretrained | Our weights
+:---:|:---:|:---:|:---:
+<img src="figs/original.png" height="200"/>|<img src="figs\pink_and_white_0.33\constant_25\scale_5\in.png" height="200"/>|<img src="figs\pink_and_white_0.33\constant_25\scale_5\out.png" height="200"/>| <img src="figs\pink_and_white_0.33\pink_2-5_scale_10_bands\scale_5\out.png" height="200"/>
+
+The performance metrics are as follows:
+Noise level| Weights | MPSNR in | MPSNR out | MSSIM in | MSSIM out 
+:---:|:---:|:---:|:---:|:---:|:---:
+1.5 |Gaussian pretrained|21.698|38.199|0.313|0.934
+1.5 |Ours|21.698|38.252|0.313|0.954
+2.5 |Gaussian pretrained|17.662|28.037|0.218|0.499
+2.5 |Ours|17.662|36.717|0.218|0.942
+5 |Gaussian pretrained|12.805|18.952|0.106|0.131
+5 |Ours|12.805|30.824|0.106|0.794
+
+**Occlusion**  
+We train 2 models with around 33% and 50% number of bands being affected, respectively. Then, we perform tests with some pretraied models and our weights on the ICVL dataset. Since each image contains 31 bands, we set the number of occluded bands to 10 and 5 corresponding to 33% and 16.5% respectively.
+
+*Results of 10 bands*
+
+Original |Gaussian pretrained $\sigma=25$ | Stripes pretrained
+:---:|:---:|:---:
+<img src="figs/original.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/out_25_gaussian_pretrained.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/out_stripe_pretrained.png" height="200"/>
+
+Input |Our weights 0.33 | Our weights 0.5
+:---:|:---:|:---:
+<img src="figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/input.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/our_weights_33_percent_10_bands.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/our_weights_50_percent_10_bands.png" height="200"/>
+
+*Results of 5 bands*
+
+Original |Gaussian pretrained $\sigma=25$ | Stripes pretrained
+:---:|:---:|:---:
+<img src="figs/original.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_5_bands/out_25_gaussian_pretrained.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_5_bands/out_stripe_pretrained.png" height="200"/>
+
+Input |Our weights 0.33 | Our weights 0.5
+:---:|:---:|:---:
+<img src="figs/occlusion/occlusion_100_100_5_bands/input.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_5_bands/our_weights_33_percent_10_bands.png" height="200"/>|<img src="figs/occlusion/occlusion_100_100_5_bands/our_weights_50_percent_10_bands.png" height="200"/>
+
+The performance metrics of 10 affected bands:  
+**MPSNR in** = 20.818, **MSSIM in** = 0.159
+
+Test | MPSNR out | MSSIM out 
+:---:|:---:|:---:
+Gaussian pretrained|39.234|0.971
+Stripes pretrained|29.219|0.693
+Our weights 0.33 (10 bands)|40.970|0.970
+Our weights 0.5 (10 bands)|40.982|0.968
+
+The performance metrics of 5 affected bands:  
+**MPSNR in** = 20.863, **MSSIM in** = 0.159
+
+Test | MPSNR out | MSSIM out 
+:---:|:---:|:---:
+Gaussian pretrained|41.098|0.972
+Stripes pretrained|29.639|0.693
+Our weights 0.33 (10 bands)|41.887|0.970
+Our weights 0.5 (10 bands)|40.712|0.968
 
 ### 3.3. Conclusion
+- The model proves the robustness not only for Gaussian noise but also its variants for certain percentages of affected bands.
+- In case occlusion, the model not only maintain good capability of noise denoising but also well reconstruct the missing area using information from unaffected bands. The performance can be slightly improved if we use a model trained with higher occluded band ratio to recover an image with lower ratio.
 
 ## 4. How to run
 ### 4.1. Requirements
@@ -97,5 +169,4 @@ $ python main.py data=dcmall noise=occlusion
 $ python main.py mode=test data=icvl noise=pink noise params.sigma=25 model.ckpt=path/to/icvl_pink_25.ckpt
 ```
 
-Some pretrained models can be found here.
- Feel free to modify the noise parameters to see the differences. You can access this folder for more information.
+Some pretrained models can be found here. Feel free to modify the noise parameters to see the differences. You can access this folder for more information.
