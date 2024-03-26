@@ -79,8 +79,8 @@ Percentage| Weights | MPSNR in | MPSNR out | MSSIM in | MSSIM out
 :---:|:---:|:---:|:---:|:---:|:---:
 100% |Gaussian pretrained|33.717|38.457|0.889|0.967
 100% |Ours|33.717|39.182|0.889|0.980
-33% |Gaussian pretrained|21.698|38.252|0.395|0.972
-33% |Ours|21.698|31.712|0.395|0.665
+33% |Gaussian pretrained|24.998|41.467|0.395|0.972
+33% |Ours|24.998|31.712|0.395|0.665
 
 
 **Occlusion**  
