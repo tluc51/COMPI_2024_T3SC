@@ -92,7 +92,7 @@ Original |Gaussian pretrained  σ=25 | Stripes pretrained
 :---:|:---:|:---:
 <img src="./figs/original.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/out_25_gaussian_pretrained.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/out_stripe_pretrained.png" height="200"/>
 
-Input |Our weights 0.33 | Our weights 0.5
+Input |Our weights (20/64) | Our weights (32/64)
 :---:|:---:|:---:
 <img src="./figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/input.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/our_weights_33_percent_10_bands.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_10_bands_with_25_gaussian_noise/our_weights_50_percent_10_bands.png" height="200"/>
 
@@ -102,19 +102,19 @@ Original |Gaussian pretrained σ=25 | Stripes pretrained
 :---:|:---:|:---:
 <img src="./figs/original.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_5_bands/out_25_gaussian_pretrained.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_5_bands/out_stripe_pretrained.png" height="200"/>
 
-Input |Our weights 0.33 | Our weights 0.5
+Input |Our weights (20/64) | Our weights (32/64)
 :---:|:---:|:---:
 <img src="./figs/occlusion/occlusion_100_100_5_bands/input.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_5_bands/our_weights_33_percent_10_bands.png" height="200"/>|<img src="./figs/occlusion/occlusion_100_100_5_bands/our_weights_50_percent_10_bands.png" height="200"/>
 
 The performance metrics of 10 affected bands:  
-**MPSNR in** = 20.818, **MSSIM in** = 0.159
+**MPSNR in** = 20.818, **MSSIM in** = 0.159, **MSE in** = 0.0083
 
-Test | MPSNR out | MSSIM out 
-:---:|:---:|:---:
-Gaussian pretrained|39.234|0.971
-Stripes pretrained|29.219|0.693
-Our weights (20/64) (10 bands)|40.970|0.970
-Our weights (32/64) (10 bands)|40.982|0.968
+Test | MPSNR out | MSSIM out | MSE out
+:---:|:---:|:---:|:---:
+Gaussian pretrained|39.234|0.971|0.0002
+Stripes pretrained|29.219|0.693| - 
+Our weights (20/64) (10 bands)|40.970|0.970|0.000103
+Our weights (32/64) (10 bands)|40.982|0.968|0.000096
 
 The performance metrics of 5 affected bands:  
 **MPSNR in** = 20.863, **MSSIM in** = 0.159
@@ -156,7 +156,8 @@ $ python main.py data=dcmall noise=occlusion
 **Test**
 
 ```
-$ python main.py mode=test data=icvl noise=pink noise params.sigma=25 model.ckpt=path/to/icvl_pink_25.ckpt
+$ python main.py mode=test data=icvl noise=occlusion noise params.sigma=25 model.ckpt=path/to/
+icvl_occlusion_20_20_mask_10_bands.ckpt
 ```
 
-Some pretrained models can be found [here](). Feel free to modify the noise parameters to see the differences.
+Some pretrained models can be found [here](https://drive.google.com/drive/folders/1Ak6JDUvH6bFK0h5FnE3cmvagIolMzyjB). Feel free to modify the noise parameters to see the differences.
