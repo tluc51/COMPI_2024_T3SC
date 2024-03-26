@@ -232,7 +232,7 @@ class ColorNoise:
             noisy[band] = x[band] + p_noise
             
         for band in bands_rest:
-            p_noise = torch.randn(x.shape[-2], x.shape[-1]) * self.std * self.noise_scale
+            p_noise = torch.randn(x.shape[-2], x.shape[-1]) * self.std
             noisy[band] += p_noise
         
         return x, noisy
