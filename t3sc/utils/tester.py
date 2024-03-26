@@ -16,6 +16,7 @@ from t3sc.models.metrics import (
     msam,
     mssim,
     psnr,
+    mse,
 )
 
 matplotlib.use("Agg")
@@ -53,7 +54,7 @@ def log_metrics(metrics, log_in=True):
             if log_in:
                 m_in = m_in[-1]
             m_out = m_out[-1]
-        logger.info(f"\t{m_name.upper()} : in={m_in:.4f}, out={m_out:.4f}")
+        logger.info(f"\t{m_name.upper()} : in={m_in:.4f}, out={m_out:.8f}")
 
 
 class Tester:
@@ -185,6 +186,10 @@ class Tester:
             logger.debug(f"Nan detected in x")
         img_metrics = {}
         with torch.no_grad():
+            logger.debug("Computing MSE")
+            img_metrics["mse_in"] = mse(x, y).item()
+            img_metrics["mse_out"] = mse(out, y).item()
+            
             logger.debug("Computing PSNR")
             img_metrics["psnr_in"] = psnr(x, y).item()
             img_metrics["psnr_out"] = psnr(out, y).item()
